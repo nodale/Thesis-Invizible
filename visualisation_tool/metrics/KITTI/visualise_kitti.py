@@ -4,6 +4,7 @@ KITTI Odometry Translation Drift visualisation.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, MaxNLocator
 
 rng = np.random.default_rng(0)
 
@@ -80,6 +81,12 @@ ax.set_xlabel("Segment length (m)")
 ax.set_ylabel("Translation error (%)")
 #ax.grid(True, alpha=0.3)
 #ax.set_axis_off()
+ax.xaxis.set_major_locator(MaxNLocator(8))
+ax.yaxis.set_major_locator(MaxNLocator(8))
+ax.xaxis.set_minor_locator(MaxNLocator(32))
+ax.yaxis.set_minor_locator(MaxNLocator(32))
+ax.grid(which="major", alpha=0.35, linewidth=0.7)
+ax.grid(which="minor", alpha=0.15, linewidth=0.4)
 
 
 plt.tight_layout()
