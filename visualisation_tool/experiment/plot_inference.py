@@ -17,8 +17,8 @@ from scipy.optimize import minimize
 from scipy.signal import correlate
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-SESSION_DIR = Path("/home/nodale/Thesis/Thesis-Invizible/data/real_life/2026-07-22_19-32-47")
-ULOG_PATH   = Path("/home/nodale/Thesis/Thesis-Invizible/data/thesis_px4_logs/log_201_2026-7-22-19-37-46.ulg")
+SESSION_DIR = Path("/home/nodale/Thesis/Thesis-Invizible/data/real_life/cls_out10")
+ULOG_PATH   = Path("/home/nodale/Thesis/Thesis-Invizible/data/real_life/cls_out10/log_202_2026-7-22-21-22-22.ulg")
 POS_NORM    = 3.0
 # ───────────────────────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ def load_zarr(session_dir):
             "output": out[-n:, :3], "onboard": obs[-n:, :3] * POS_NORM, "t_s": t_s}
 
 
-def load_odometry(ulog_path, n_instances=3):
+def load_odometry(ulog_path, n_instances=2):
     by_id = {d.multi_id: d for d in ULog(str(ulog_path)).data_list
              if d.name == "estimator_odometry"}
     result = []
@@ -169,11 +169,11 @@ def main():
             odo_aligned.append((t * scale + offset - t0, xyz))
 
     # compute global axis limits from all data
-    all_xyz = [d["truth"], d["onboard"],
-               *[xyz for _, xyz in (o for o in odo_aligned if o)]]
+    #all_xyz = [d["truth"], d["onboard"], *[xyz for _, xyz in (o for o in odo_aligned if o)]]
+    all_xyz = [d["truth"], d["onboard"]]
     all_xy  = np.concatenate([a[:, :2] for a in all_xyz])
     all_z   = np.concatenate([a[:, 2]  for a in all_xyz])
-    pad     = 0.5
+    pad     = 0.2
     xy_lim  = (all_xy.min() - pad, all_xy.max() + pad)
     z_lim   = (all_z.min()  - pad, all_z.max()  + pad)
     tc_all  = d["t_s"] - t0
