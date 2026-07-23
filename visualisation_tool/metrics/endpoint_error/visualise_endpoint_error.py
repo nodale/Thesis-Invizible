@@ -106,6 +106,8 @@ ax.text(
 
 
 # Same clean style as ATE figure
+ax.set_xlabel("x (m)")
+ax.set_ylabel("y (m)")
 #ax.axis("equal")
 #ax.set_title("Endpoint Error")
 #ax.legend(fontsize=8)

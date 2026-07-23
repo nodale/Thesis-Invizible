@@ -79,6 +79,8 @@ ymin = min(gt[:,1].min(), est[:,1].min()) - pad
 ymax = max(gt[:,1].max(), est[:,1].max()) + pad
 ax.set_xlim(xmin, xmax)
 ax.set_ylim(ymin, ymax)
+ax.set_xlabel("x (m)")
+ax.set_ylabel("y (m)")
 #ax.axis("equal")
 #ax.set_title("Trajectory")
 #ax.legend(fontsize=8)
@@ -110,6 +112,8 @@ ax.text(
 )
 ax.set_xlim(-0.5, len(errors)-0.5)
 ax.set_ylim(0, max(errors) * 1.15)
+ax.set_xlabel("trajectory Index")
+ax.set_ylabel("ATE per frame (m)")
 #ax.set_title("Trajectory")
 #ax.legend(fontsize=8)
 #ax.grid(True, alpha=0.3)

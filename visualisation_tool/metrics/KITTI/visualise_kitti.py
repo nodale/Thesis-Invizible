@@ -1,8 +1,5 @@
 """
-KITTI Odometry Metrics visualisation.
-t_err: avg translational error (%) over sub-sequences
-r_err: avg rotational error (deg/m) over sub-sequences
-Ground truth = 0 drift (perfect odometry baseline).
+KITTI Odometry Translation Drift visualisation.
 """
 
 import numpy as np
@@ -10,31 +7,85 @@ import matplotlib.pyplot as plt
 
 rng = np.random.default_rng(0)
 
-lengths = np.array([100, 200, 300, 400, 500, 600, 700, 800])
 
-t_err = np.clip(1.5 + rng.normal(0, 0.3, len(lengths)), 0.1, None)
-r_err = np.clip(0.005 + rng.normal(0, 0.003, len(lengths)), 0.001, None)
+# KITTI evaluation segment lengths
+lengths = np.array(
+    [100, 200, 300, 400, 500, 600, 700, 800]
+)
 
-fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-fig.suptitle("KITTI Odometry Metrics")
+# Simulated KITTI translational drift (%)
+t_err = np.clip(
+    1.5 + rng.normal(0, 0.3, len(lengths)),
+    0.1,
+    None,
+)
 
-axes[0].plot(lengths, np.zeros_like(lengths), "g-", lw=1.5, label="Ground truth (0%)")
-axes[0].plot(lengths, t_err, "o-", color="steelblue", label=f"Estimated (avg {t_err.mean():.2f}%)")
-axes[0].set_xlabel("Sub-sequence length (m)")
-axes[0].set_ylabel("Translational error (%)")
-axes[0].set_title("t_err")
-axes[0].legend()
-axes[0].grid(True, alpha=0.3)
+mean_drift = np.mean(t_err)
 
-axes[1].plot(lengths, np.zeros_like(lengths), "g-", lw=1.5, label="Ground truth (0)")
-axes[1].plot(lengths, r_err * 1000, "o-", color="tomato",
-             label=f"Estimated (avg {r_err.mean()*1000:.3f} ×10⁻³ deg/m)")
-axes[1].set_xlabel("Sub-sequence length (m)")
-axes[1].set_ylabel("Rotational error (×10⁻³ deg/m)")
-axes[1].set_title("r_err")
-axes[1].legend()
-axes[1].grid(True, alpha=0.3)
+
+fig, ax = plt.subplots(
+    figsize=(10, 4),
+    dpi=50,
+)
+
+
+# Translation drift curve
+ax.plot(
+    lengths,
+    t_err,
+    "-o",
+    color="red",
+    lw=1.4,
+    ms=5,
+    mfc="red",
+    mec="red",
+    zorder=3,
+)
+
+
+# Average drift line
+ax.axhline(
+    mean_drift,
+    color="black",
+    ls=(0, (4, 3)),
+    lw=1.2,
+)
+
+
+# Annotation
+ax.text(
+    lengths[-2],
+    mean_drift + 0.05,
+    f"Mean drift = {mean_drift:.2f} %",
+    fontsize=11,
+    color="black",
+)
+
+
+# Limits with whitespace
+ax.set_xlim(
+    lengths[0] - 30,
+    lengths[-1] + 30,
+)
+
+ax.set_ylim(
+    0,
+    max(t_err) * 1.25,
+)
+
+
+# Clean style matching ATE figure
+#ax.set_title("KITTI translation drift")
+ax.set_xlabel("Segment length (m)")
+ax.set_ylabel("Translation error (%)")
+#ax.grid(True, alpha=0.3)
+#ax.set_axis_off()
+
 
 plt.tight_layout()
-plt.savefig("kitti_visualisation.png", dpi=150)
-plt.show()
+plt.savefig(
+    "kitti_translation_drift_visualisation.png",
+    dpi=400,
+)
+
+#plt.show()
