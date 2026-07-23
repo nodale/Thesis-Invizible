@@ -102,25 +102,39 @@ def plot_champion(axes, output_xyz, truth_xyz, onboard_xyz, tc, odo_list,
         m = (t >= tc[0]) & (t <= tc[-1])
         return t[m], xyz[m]
 
+    def _endpoints(ax, xy, color):
+        ax.plot(*xy[0, :2],  "o", ms=5, color=color, zorder=5)
+        ax.plot(*xy[-1, :2], "s", ms=5, color=color, zorder=5)
+
+    def _add_endpoint_legend(ax):
+        from matplotlib.lines import Line2D
+        handles, labels = ax.get_legend_handles_labels()
+        handles += [Line2D([0], [0], marker="o", color="grey", ls="none", ms=5),
+                    Line2D([0], [0], marker="s", color="grey", ls="none", ms=5)]
+        labels  += ["start", "end"]
+        ax.legend(handles=handles, labels=labels, fontsize=7)
+
     # left — inferred vs GT
     ax_inf.plot(*truth_xyz[:, :2].T, lw=1.4, color="black", label="ground truth")
     ax_inf.plot(*inferred[:, :2].T,  lw=1.4, color="red",   label="inferred")
+    _endpoints(ax_inf, truth_xyz, "black"); _endpoints(ax_inf, inferred, "red")
     ax_inf.set_title(f"Champion {champion_id} — Inferred vs GT")
     ax_inf.set_xlabel("x (m)"); ax_inf.set_ylabel("y (m)")
-    ax_inf.legend(fontsize=7); ax_inf.set_aspect("equal", adjustable="box")
+    _add_endpoint_legend(ax_inf); ax_inf.set_aspect("equal", adjustable="box")
     _set_lims(ax_inf, xy_lim, xy_lim); _grid(ax_inf)
 
     # middle — odometry vs GT
     ax_odo.plot(*truth_xyz[:, :2].T, lw=1.4, color="black", label="ground truth")
+    _endpoints(ax_odo, truth_xyz, "black")
     for i, odo in enumerate(odo_list):
-
         if odo is None: continue
         t_w, xyz_w = _clip(odo)
         if len(t_w):
             ax_odo.plot(*xyz_w[:, :2].T, lw=1.4, ls="--", color=ODO_COLORS[i], label=odom_name[i])
+            _endpoints(ax_odo, xyz_w, ODO_COLORS[i])
     ax_odo.set_title(f"Champion {champion_id} — Odometry vs GT")
     ax_odo.set_xlabel("x (m)"); ax_odo.set_ylabel("y (m)")
-    ax_odo.legend(fontsize=7); ax_odo.set_aspect("equal", adjustable="box")
+    _add_endpoint_legend(ax_odo); ax_odo.set_aspect("equal", adjustable="box")
     _set_lims(ax_odo, xy_lim, xy_lim); _grid(ax_odo)
 
     # right — Z over time
